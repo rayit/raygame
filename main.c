@@ -18,11 +18,15 @@ typedef struct Cell
 {
     int i;
     int j;
+    bool containsMine;
+    bool revealed;
 } Cell;
 
 Cell grid[COLS][ROWS];
 
 void CellDraw(Cell);
+bool IndexIsValid(int, int);
+void CellReveal(int, int);
 
 // -------------------------------------------------------------------------------------
 // Program main entry point
@@ -53,6 +57,20 @@ int main(void)
         if (IsKeyDown(KEY_LEFT)) ballPosition.x -= 2.0f;
         if (IsKeyDown(KEY_UP)) ballPosition.y -= 2.0f;
         if (IsKeyDown(KEY_DOWN)) ballPosition.y += 2.0f;
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) ) 
+        {
+            Vector2 mPos = GetMousePosition();
+            int indexI = mPos.x / cellWidth;
+            int indexJ = mPos.y / cellHeight;
+
+            if ( IndexIsValid(indexI, indexJ)) 
+            {
+                // grid[indexI][indexJ].revealed = true;
+                CellReveal(indexI, indexJ);
+            }
+
+        }
         
         // Draw
         // -----------------------------------------------------------------------------
@@ -77,5 +95,36 @@ int main(void)
 
 void CellDraw(Cell cell)
 {
-   DrawRectangleLines(cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight, BLACK);
+    if (cell.revealed)
+    {
+        if (cell.containsMine)
+        {
+
+        }
+        else 
+        {
+             DrawRectangle(cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight, LIGHTGRAY);
+
+        }
+    }
+    DrawRectangleLines(cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight, BLACK);
+}
+
+bool IndexIsValid(int i, int j)
+{
+    return i >= 0 && i < COLS && j >=0 && j < ROWS;
+}
+
+void CellReveal(int i, int j)
+{
+    grid[i][j].revealed = true;
+
+    if ( grid[i][j].containsMine ) 
+    {
+        // lose!
+    } 
+    else 
+    {
+        // play sound
+    }
 }
