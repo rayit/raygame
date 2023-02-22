@@ -36,13 +36,50 @@ int main(void)
     // Initialization
     // ---------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "RayIT");
+
+    // Testing Model
+    Model model = LoadModel("spider.obj");
+    Texture2D tex = LoadTexture("haar.jpg");
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = tex;
     
+    Camera cam = {0};
+    cam.position = (Vector3){150.0f, 150.0f, 150.0f};
+    cam.target = (Vector3){0.0f, 0.0f, 0.0f};
+    cam.up = (Vector3){0.0f,1.0f,0.0f};
+    cam.fovy = 90.0f;
+    cam.projection = CAMERA_PERSPECTIVE;
+
+    Vector3 pos = {0.0f,0.0f,0.0f};
+    BoundingBox bounds = GetMeshBoundingBox(model.meshes[0]);
+
+    SetTargetFPS(60);
+
+
     // Create a grid of cells
     for (int i = 0; i < COLS; i++) 
     {
         for (int j = 0; j < ROWS; j++) 
         {
-            grid[i][j] = (Cell) {.i = i, .j = j};
+            grid[i][j] = (Cell) 
+            {
+                .i = i, 
+                .j = j,
+                .containsMine = false,
+                .revealed = false
+            };
+        }
+    }
+
+    // Set mines
+    int minesToPlace = (int) (ROWS * COLS * 0.1f);
+    while(minesToPlace > 0) 
+    {
+        int i = rand() % COLS;
+        int j = rand() % ROWS;
+        if (!grid[i][j].containsMine)
+        {
+            grid[i][j].containsMine = true;
+            minesToPlace--;
         }
     }
 
@@ -75,7 +112,13 @@ int main(void)
         // Draw
         // -----------------------------------------------------------------------------
         BeginDrawing();
+            
             ClearBackground(RAYWHITE);
+            BeginMode3D(cam);
+            DrawModel(model, pos, 1.0f, WHITE);
+            
+            EndMode3D();
+            
 
             DrawText("Move the ball with arrow keys", 10, 10, 20, DARKGRAY);
             for (int i=0; i < COLS; i++) 
@@ -89,6 +132,8 @@ int main(void)
 
         EndDrawing(); 
     }
+    UnloadTexture(tex);
+    UnloadModel(model);
     CloseWindow();
     return 0;
 }
@@ -99,7 +144,7 @@ void CellDraw(Cell cell)
     {
         if (cell.containsMine)
         {
-
+            DrawRectangle(cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight, RED);
         }
         else 
         {
