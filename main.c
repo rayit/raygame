@@ -14,6 +14,15 @@ const int screenHeight = 400;
 const int cellWidth = screenWidth / COLS;
 const int cellHeight = screenHeight / ROWS;
 
+typedef struct Cell
+{
+    int i;
+    int j;
+} Cell;
+
+Cell grid[COLS][ROWS];
+
+void CellDraw(Cell);
 
 // -------------------------------------------------------------------------------------
 // Program main entry point
@@ -23,6 +32,15 @@ int main(void)
     // Initialization
     // ---------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "RayIT");
+    
+    // Create a grid of cells
+    for (int i = 0; i < COLS; i++) 
+    {
+        for (int j = 0; j < ROWS; j++) 
+        {
+            grid[i][j] = (Cell) {.i = i, .j = j};
+        }
+    }
 
     Vector2 ballPosition = { (float)screenWidth/2, (float)screenHeight/2 };
     SetTargetFPS(60);
@@ -42,17 +60,13 @@ int main(void)
             ClearBackground(RAYWHITE);
 
             DrawText("Move the ball with arrow keys", 10, 10, 20, DARKGRAY);
-
-            // Draw raws
-            for (int i = 0; i < COLS; i++) 
+            for (int i=0; i < COLS; i++) 
             {
-                for (int j = 0; j < ROWS; j++) 
+                for (int j=0; j < ROWS; j++)
                 {
-                    DrawRectangleLines(i * cellWidth, j * cellHeight, cellWidth, cellHeight, BLACK);
+                    CellDraw(grid[i][j]);
                 }
             }
-
-            
             DrawCircleV(ballPosition, 50, MAROON);
 
         EndDrawing(); 
@@ -61,3 +75,7 @@ int main(void)
     return 0;
 }
 
+void CellDraw(Cell cell)
+{
+   DrawRectangleLines(cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight, BLACK);
+}
