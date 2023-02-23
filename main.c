@@ -8,8 +8,8 @@
 #define ROWS 10
 
 
-const int screenWidth = 800;
-const int screenHeight = 400;
+const int screenWidth = 1000;
+const int screenHeight = 800;
 
 const int cellWidth = screenWidth / COLS;
 const int cellHeight = screenHeight / ROWS;
@@ -20,9 +20,13 @@ typedef struct Cell
     int j;
     bool containsMine;
     bool revealed;
+    bool flagged;
 } Cell;
 
 Cell grid[COLS][ROWS];
+
+Texture2D flagSprite;
+
 
 void CellDraw(Cell);
 bool IndexIsValid(int, int);
@@ -37,9 +41,11 @@ int main(void)
     // ---------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "RayIT");
 
+    flagSprite = LoadTexture("resources/flag.png");
+
     // Testing Model
-    Model model = LoadModel("spider.obj");
-    Texture2D tex = LoadTexture("haar.jpg");
+    /*Model model = LoadModel("resources/spider.obj");
+    Texture2D tex = LoadTexture("resources/bg.png");
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = tex;
     
     Camera cam = {0};
@@ -51,7 +57,7 @@ int main(void)
 
     Vector3 pos = {0.0f,0.0f,0.0f};
     BoundingBox bounds = GetMeshBoundingBox(model.meshes[0]);
-
+    */
     SetTargetFPS(60);
 
 
@@ -79,6 +85,9 @@ int main(void)
         if (!grid[i][j].containsMine)
         {
             grid[i][j].containsMine = true;
+            
+            // Also add some flags this way for testing
+            grid[i][j].flagged = true;
             minesToPlace--;
         }
     }
@@ -114,13 +123,13 @@ int main(void)
         BeginDrawing();
             
             ClearBackground(RAYWHITE);
-            BeginMode3D(cam);
-            DrawModel(model, pos, 1.0f, WHITE);
+            // BeginMode3D(cam);
+            // DrawModel(model, pos, 1.0f, WHITE);
             
-            EndMode3D();
+            // EndMode3D();
             
 
-            DrawText("Move the ball with arrow keys", 10, 10, 20, DARKGRAY);
+            DrawText("Click cells", 10, 10, 20, DARKGRAY);
             for (int i=0; i < COLS; i++) 
             {
                 for (int j=0; j < ROWS; j++)
@@ -128,12 +137,12 @@ int main(void)
                     CellDraw(grid[i][j]);
                 }
             }
-            DrawCircleV(ballPosition, 50, MAROON);
+            // DrawCircleV(ballPosition, 50, MAROON);
 
         EndDrawing(); 
     }
-    UnloadTexture(tex);
-    UnloadModel(model);
+    //UnloadTexture(tex);
+    //UnloadModel(model);
     CloseWindow();
     return 0;
 }
@@ -151,7 +160,17 @@ void CellDraw(Cell cell)
              DrawRectangle(cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight, LIGHTGRAY);
 
         }
+    } 
+    else if(cell.flagged)
+    {
+        Rectangle source = {0,0,flagSprite.width, flagSprite.height};
+        Rectangle dest = {cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight};
+        Vector2 origin = {0,0};
+
+        DrawTexturePro(flagSprite, source, dest, origin, 0, Fade( WHITE, 0.3f));
     }
+    
+
     DrawRectangleLines(cell.i * cellWidth, cell.j * cellHeight, cellWidth, cellHeight, BLACK);
 }
 
