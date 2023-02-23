@@ -1,19 +1,33 @@
+/*****************************************************************************
+ *
+ * RayIT game development (starting)
+ *
+ * Trying all sort of stuff to learn RayLib
+ *
+ * Copyright (c) 2023 Raymond Marx (rmarx@rayit.com)
+ *
+ ****************************************************************************/
+
 #include <stdlib.h>
 #include <time.h>
 
 #include "raylib.h"
 #include "raymath.h"
 
+#if defined(PLATFORM_WEB)
+    #include <emscripten/emscripten.h>
+#endif
+
+//---------------------------------------------------------------------------
+// Some defines
+//---------------------------------------------------------------------------
 #define COLS 10
 #define ROWS 10
 
 
-const int screenWidth = 1000;
-const int screenHeight = 800;
-
-const int cellWidth = screenWidth / COLS;
-const int cellHeight = screenHeight / ROWS;
-
+//---------------------------------------------------------------------------
+// Types and Structures Definition
+//---------------------------------------------------------------------------
 typedef struct Cell
 {
     int i;
@@ -23,14 +37,24 @@ typedef struct Cell
     bool flagged;
 } Cell;
 
-Cell grid[COLS][ROWS];
+//---------------------------------------------------------------------------
+// GLobal Variables Declaration
+//---------------------------------------------------------------------------
+const int screenWidth = 1000;
+const int screenHeight = 800;
 
+const int cellWidth = screenWidth / COLS;
+const int cellHeight = screenHeight / ROWS;
+
+Cell grid[COLS][ROWS];
 Texture2D flagSprite;
 
-
-void CellDraw(Cell);
-bool IndexIsValid(int, int);
-void CellReveal(int, int);
+//---------------------------------------------------------------------------
+// Module Functions Declaration (local)
+//---------------------------------------------------------------------------
+static void CellDraw(Cell);
+static bool IndexIsValid(int, int);
+static void CellReveal(int, int);
 
 // -------------------------------------------------------------------------------------
 // Program main entry point
