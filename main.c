@@ -23,7 +23,7 @@
 //---------------------------------------------------------------------------
 #define COLS 10
 #define ROWS 10
-
+#define NUMBER_MAX_COUNT 16
 
 //---------------------------------------------------------------------------
 // Types and Structures Definition
@@ -37,6 +37,24 @@ typedef struct Cell
     bool flagged;
 } Cell;
 
+typedef struct Basket
+{
+    Vector2 position;
+} Basket;
+
+typedef struct Number
+{
+    Vector2 position;
+    bool visible;
+    float fallSpeed;
+} Number;
+
+typedef enum GameState
+{
+    PLAYING,
+    END
+} GameState;
+
 //---------------------------------------------------------------------------
 // GLobal Variables Declaration
 //---------------------------------------------------------------------------
@@ -46,27 +64,44 @@ const int screenHeight = 800;
 const int cellWidth = screenWidth / COLS;
 const int cellHeight = screenHeight / ROWS;
 
+GameState _state;
 Cell grid[COLS][ROWS];
 Texture2D flagSprite;
+Texture2D _atlasBasket;
+Texture2D _atlasNumber1;
+
+Number _numbers[NUMBER_MAX_COUNT]; 
+
+float _timeGameStarted;
+float _timeGameEnded;
 
 //---------------------------------------------------------------------------
 // Module Functions Declaration (local)
 //---------------------------------------------------------------------------
+void GameInit(void);
+void GameEnd(void);
+void UpdateDrawFrame(void);
 static void CellDraw(Cell);
 static bool IndexIsValid(int, int);
 static void CellReveal(int, int);
+void UnsetNumberAt(int i);
+void SetNumber(int i, Vector2 position, float fallSpeed);
 
 // -------------------------------------------------------------------------------------
 // Program main entry point
 // -------------------------------------------------------------------------------------
 int main(void)
 {
+    srand(time(0));
+
     // Initialization
     // ---------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "RayIT");
 
     flagSprite = LoadTexture("resources/flag.png");
-
+    _atlasBasket = LoadTexture("resources/red-basket.png");
+    
+    GameInit();
     // Testing Model
     /*Model model = LoadModel("resources/spider.obj");
     Texture2D tex = LoadTexture("resources/bg.png");
@@ -144,26 +179,7 @@ int main(void)
         
         // Draw
         // -----------------------------------------------------------------------------
-        BeginDrawing();
-            
-            ClearBackground(RAYWHITE);
-            // BeginMode3D(cam);
-            // DrawModel(model, pos, 1.0f, WHITE);
-            
-            // EndMode3D();
-            
-
-            DrawText("Click cells", 10, 10, 20, DARKGRAY);
-            for (int i=0; i < COLS; i++) 
-            {
-                for (int j=0; j < ROWS; j++)
-                {
-                    CellDraw(grid[i][j]);
-                }
-            }
-            // DrawCircleV(ballPosition, 50, MAROON);
-
-        EndDrawing(); 
+        UpdateDrawFrame();
     }
     //UnloadTexture(tex);
     //UnloadModel(model);
@@ -216,3 +232,77 @@ void CellReveal(int i, int j)
         // play sound
     }
 }
+
+void UnsetNumberAt(int i)
+{
+    
+}
+
+void SetNumberAt(int i, Vector2 position, float fallSpeed)
+{
+
+}
+
+
+void GameInit(void)
+{
+    _state = PLAYING;
+    _timeGameStarted = GetTime();
+
+    // 
+    for (int i = 0; i < NUMBER_MAX_COUNT; i++)
+    {
+        _numbers[i].visible = false;
+        
+    }
+}
+
+void GameEnd(void)
+{
+    _state = END;
+    _timeGameEnded = GetTime();
+}
+
+void UpdateDrawFrame(void)
+{
+    if ( _state == END && IsKeyPressed(KEY_R))
+    {
+        GameInit();
+    }
+
+    // TODO winning..
+    // if (win condition)
+    // {
+    //     GameEnd();
+    // }
+
+    BeginDrawing();
+
+    if (_state == END)
+    {
+        // TODO: GameOver HUD
+    } 
+    else 
+    {
+        // TODO: Gametime HUD
+    }
+    ClearBackground(RAYWHITE);
+    // BeginMode3D(cam);
+    // DrawModel(model, pos, 1.0f, WHITE);
+            
+    // EndMode3D();
+            
+
+    DrawText("Click cells", 10, 10, 20, DARKGRAY);
+    for (int i=0; i < COLS; i++) 
+    {
+        for (int j=0; j < ROWS; j++)
+        {
+            CellDraw(grid[i][j]);
+        }
+    }
+    // DrawCircleV(ballPosition, 50, MAROON);
+
+    EndDrawing();
+}
+
