@@ -10,14 +10,20 @@
  * TODO:
  *      alfa1:
  *       V moving basket
- *       - falling numbers
+ *       V falling numbers
  *      alfa2:
+ *       - Add sum
+ *       - Add correct answer to sum..
+ *       - correct spacing of answers
+ *       - 
  *       - moving basket with mouse
  *       - prevent out of screen
  *       - background
  *       - calculations...
  *       - correct numers
  *       - collision
+ *      alfa3:
+ *       - sound
  * Copyright (c) 2023 Raymond Marx (rmarx@rayit.com)
  *
  ****************************************************************************/
@@ -40,6 +46,7 @@
 #define BASKET_SPEED 6.0f
 #define NUMBER_MAX_COUNT 8
 #define NUMBERS_SPEED 6.0f
+#define NUMBERS_SIZE 20
 //---------------------------------------------------------------------------
 // Types and Structures Definition
 //---------------------------------------------------------------------------
@@ -145,7 +152,7 @@ void DrawNumbers(void)
         
         if (_numbers[i].visible == true) 
         {
-            DrawText("100", _numbers[i].position.x, _numbers[i].position.y,  15, RED);
+            DrawText("100", _numbers[i].position.x, _numbers[i].position.y,  NUMBERS_SIZE, RED);
         }
         
         // Check collision with basket
