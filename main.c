@@ -9,9 +9,15 @@
  *       In the HUB there is a sum which the outcome you need to catch..
  * TODO:
  *      alfa1:
- *       - moving basket
+ *       V moving basket
  *       - falling numbers
- *
+ *      alfa2:
+ *       - moving basket with mouse
+ *       - prevent out of screen
+ *       - background
+ *       - calculations...
+ *       - correct numers
+ *       - collision
  * Copyright (c) 2023 Raymond Marx (rmarx@rayit.com)
  *
  ****************************************************************************/
@@ -29,19 +35,19 @@
 //---------------------------------------------------------------------------
 // Some defines
 //---------------------------------------------------------------------------
-#define NUMBER_MAX_COUNT 16
-#define NUMBER_SOURCE_WIDTH 100
-#define NUMBER_SOURCE_HEIGHT 100
 #define BASKET_SOURCE_HEIGHT 90
 #define BASKET_SOURCE_WIDTH 100
-#define NUMBER1_SOURCE_RECTANGLE CLITERAL(Rectangle){0,0,NUMBER_SOURCE_WIDTH, NUMBER_SOURCE_HEIGHT}
-
+#define BASKET_SPEED 6.0f
+#define NUMBER_MAX_COUNT 8
+#define NUMBERS_SPEED 6.0f
 //---------------------------------------------------------------------------
 // Types and Structures Definition
 //---------------------------------------------------------------------------
 typedef struct Basket
 {
     Vector2 position;
+    Rectangle rec;
+    Rectangle rec2;
 } Basket;
 
 typedef struct Number
@@ -49,6 +55,8 @@ typedef struct Number
     Vector2 position;
     bool visible;
     float fallSpeed;
+    int number;
+    Rectangle rec;
 } Number;
 
 typedef enum GameState
@@ -79,10 +87,10 @@ float _timeGameEnded;
 void GameInit(void);
 void GameEnd(void);
 void UpdateDrawFrame(void);
-void UnsetNumberAt(int i);
 void DrawNumbers(void);
-void SetNumber(int i, Vector2 position, float fallSpeed);
 void DrawBasket(void);
+void DrawNumbersInit(void);
+void ResetNumbers(void);
 
 // -------------------------------------------------------------------------------------
 // Program main entry point
@@ -94,36 +102,18 @@ int main(void)
     // Initialization
     // ---------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "RayIT");
+    
+    // TODO load textures..
     _atlasBasket = LoadTexture("resources/red-basket.png");
-    _atlasNumber1 = LoadTexture("resources/red-basket.png");
+    _basket.rec = (Rectangle){0, 0, BASKET_SOURCE_WIDTH, BASKET_SOURCE_HEIGHT };
+
 
     GameInit();
-    SetTargetFPS(60);
+    SetTargetFPS(80);
 
     while(!WindowShouldClose())
     {
-        // Update
-        // -----------------------------------------------------------------------------
-        /* EXAMPLE
-        if (IsKeyDown(KEY_UP)) ballPosition.y -= 2.0f;
-        if (IsKeyDown(KEY_DOWN)) ballPosition.y += 2.0f;
-
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) ) 
-        {
-            Vector2 mPos = GetMousePosition();
-            int indexI = mPos.x / cellWidth;
-            int indexJ = mPos.y / cellHeight;
-
-            if ( IndexIsValid(indexI, indexJ)) 
-            {
-                // grid[indexI][indexJ].revealed = true;
-                CellReveal(indexI, indexJ);
-            }
-
-        }
-        */
         // Draw
-        // -----------------------------------------------------------------------------
         UpdateDrawFrame();
     }
     //UnloadTexture(tex);
@@ -132,57 +122,75 @@ int main(void)
     return 0;
 }
 
-void UnsetNumberAt(int i)
+void DrawNumbersInit(void) 
 {
-    _numbers[i].visible = false;
-}
-
-void SetNumberAt(int i, Vector2 position, float fallSpeed)
-{
-    if ( i < 0 || i >= NUMBER_MAX_COUNT )
+    for (int i = 0; i < NUMBER_MAX_COUNT; i++ )
     {
-        return;
-    }
-    
-    _numbers[i].position = position;
-    _numbers[i].fallSpeed = fallSpeed;
-    _numbers[i].visible = true;
+        // Random X position
+        _numbers[i].position.x = GetRandomValue( 10, screenWidth-10 );
+        _numbers[i].visible = true;
+    }     
 }
 
 void DrawNumbers(void)
 {
+    // On screen we want to have NUMBER_MAX_COUNT on random position
+    // with random speed going down..
+    
     for (int i = 0; i < NUMBER_MAX_COUNT; i++ )
-    {   
-        if (!_numbers[i].visible)
+    {
+        // Random X position
+        _numbers[i].position.y = _numbers[i].position.y + NUMBERS_SPEED;
+        _numbers[i].rec = (Rectangle){_numbers[i].position.x, _numbers[i].position.y, 10, 10};
+        
+        if (_numbers[i].visible == true) 
         {
-            // continue;
+            DrawText("100", _numbers[i].position.x, _numbers[i].position.y,  15, RED);
         }
-        // Offset position
-        Vector2 position = _numbers[i].position;
-        position.x = NUMBER_SOURCE_WIDTH/2;
-        position.y = NUMBER_SOURCE_HEIGHT/2;
+        
+        // Check collision with basket
+        // bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2);
+        if (CheckCollisionRecs(_basket.rec2, _numbers[i].rec) == true )  
+        {
+            // TODO
+            _numbers[i].visible = false;
+        }
+    }
+    ResetNumbers();
+}
 
-        DrawTextureRec(_atlasNumber1, NUMBER1_SOURCE_RECTANGLE, position, WHITE);
+void ResetNumbers(void) 
+{
+
+    for (int i = 0; i < NUMBER_MAX_COUNT; i++ )
+    {
+        if ( _numbers[i].position.y > screenHeight) 
+        {
+            _numbers[i].position.y = 0;
+        }
     }
 }
 
+
 void DrawBasket(void)
 {
-    Rectangle rec = {0, 0, BASKET_SOURCE_WIDTH, BASKET_SOURCE_HEIGHT };
-    DrawTextureRec(_atlasBasket, rec, _basket.position, WHITE);
+    // Moving x axis
+    if (IsKeyDown(KEY_RIGHT)) _basket.position.x += BASKET_SPEED;
+    if (IsKeyDown(KEY_LEFT)) _basket.position.x -= BASKET_SPEED;
+    _basket.rec2 = (Rectangle){_basket.position.x, _basket.position.y, BASKET_SOURCE_WIDTH, BASKET_SOURCE_HEIGHT};
+    DrawTextureRec(_atlasBasket, _basket.rec, _basket.position, WHITE);
 }
 
 void GameInit(void)
 {
     _state = PLAYING;
     _timeGameStarted = GetTime();
+    
+    // Initial position
     _basket.position.x = screenWidth/2 - BASKET_SOURCE_WIDTH/2;
     _basket.position.y = screenHeight - BASKET_SOURCE_HEIGHT -  10;
-    // 
-    for (int i = 0; i < NUMBER_MAX_COUNT; i++)
-    {
-        UnsetNumberAt(i);
-    }
+    // Initialize numbers X position
+    DrawNumbersInit();
 }
 
 void GameEnd(void)
@@ -215,11 +223,9 @@ void UpdateDrawFrame(void)
     {
         // TODO: Gametime HUD
     }
-    if (IsKeyDown(KEY_RIGHT)) _basket.position.x += 2.0f;
-    if (IsKeyDown(KEY_LEFT)) _basket.position.x -= 2.0f;
     DrawBasket();
+    DrawNumbers();
     DrawText("Calculate and catch correct number!", 10, 10, 20, DARKGRAY);
-    DrawBasket();    
     EndDrawing();
 }
 
