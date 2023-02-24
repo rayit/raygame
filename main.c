@@ -8,9 +8,9 @@
  *       Numbers fall down and you have to use a basket to catch them
  *       In the HUB there is a sum which the outcome you need to catch..
  * TODO:
- *       - moving basjet
+ *      alfa1:
+ *       - moving basket
  *       - falling numbers
- *
  *
  * Copyright (c) 2023 Raymond Marx (rmarx@rayit.com)
  *
@@ -30,6 +30,9 @@
 // Some defines
 //---------------------------------------------------------------------------
 #define NUMBER_MAX_COUNT 16
+#define NUMBER_SOURCE_WIDTH 100
+#define NUMBER_SOURCE_HEIGHT 100
+#define NUMBER1_SOURCE_RECTANGLE CLITERAL(Rectangle){0,0,NUMBER_SOURCE_WIDTH, NUMBER_SOURCE_HEIGHT}
 
 //---------------------------------------------------------------------------
 // Types and Structures Definition
@@ -74,6 +77,7 @@ void GameInit(void);
 void GameEnd(void);
 void UpdateDrawFrame(void);
 void UnsetNumberAt(int i);
+void DrawNumbers(void);
 void SetNumber(int i, Vector2 position, float fallSpeed);
 
 // -------------------------------------------------------------------------------------
@@ -87,7 +91,8 @@ int main(void)
     // ---------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "RayIT");
     _atlasBasket = LoadTexture("resources/red-basket.png");
-    
+    _atlasNumber1 = LoadTexture("resources/red-basket.png");
+
     GameInit();
     SetTargetFPS(60);
 
@@ -127,12 +132,36 @@ int main(void)
 
 void UnsetNumberAt(int i)
 {
-    
+    _numbers[i].visible = false;
 }
 
 void SetNumberAt(int i, Vector2 position, float fallSpeed)
 {
+    if ( i < 0 || i >= NUMBER_MAX_COUNT )
+    {
+        return;
+    }
+    
+    _numbers[i].position = position;
+    _numbers[i].fallSpeed = fallSpeed;
+    _numbers[i].visible = true;
+}
 
+void DrawNumbers(void)
+{
+    for (int i = 0; i < NUMBER_MAX_COUNT; i++ )
+    {   
+        if (!_numbers[i].visible)
+        {
+            // continue;
+        }
+        // Offset position
+        Vector2 position = _numbers[i].position;
+        position.x = NUMBER_SOURCE_WIDTH/2;
+        position.y = NUMBER_SOURCE_HEIGHT/2;
+
+        DrawTextureRec(_atlasNumber1, NUMBER1_SOURCE_RECTANGLE, position, WHITE);
+    }
 }
 
 
@@ -144,8 +173,7 @@ void GameInit(void)
     // 
     for (int i = 0; i < NUMBER_MAX_COUNT; i++)
     {
-        _numbers[i].visible = false;
-        
+        UnsetNumberAt(i);
     }
 }
 
@@ -180,8 +208,8 @@ void UpdateDrawFrame(void)
         // TODO: Gametime HUD
     }
 
-    DrawText("Click cells", 10, 10, 20, DARKGRAY);
-    
+    DrawText("Calculate and catch correct number!", 10, 10, 20, DARKGRAY);
+    DrawNumbers();    
     EndDrawing();
 }
 
