@@ -1,4 +1,7 @@
 
+#### Idea
+> Idea is to make counting game.. So you get a sum and you have to take the good 1 in your basket..
+
 
 TODO:
     - split up, use InitGame, UpdateGame, DrawGame, UnloadGame, UpdateDrawFrame?? in seperate files .h .c
