@@ -32,6 +32,8 @@
 #define NUMBER_MAX_COUNT 16
 #define NUMBER_SOURCE_WIDTH 100
 #define NUMBER_SOURCE_HEIGHT 100
+#define BASKET_SOURCE_HEIGHT 90
+#define BASKET_SOURCE_WIDTH 100
 #define NUMBER1_SOURCE_RECTANGLE CLITERAL(Rectangle){0,0,NUMBER_SOURCE_WIDTH, NUMBER_SOURCE_HEIGHT}
 
 //---------------------------------------------------------------------------
@@ -66,6 +68,7 @@ Texture2D _atlasBasket;
 Texture2D _atlasNumber1;
 
 Number _numbers[NUMBER_MAX_COUNT]; 
+Basket _basket;
 
 float _timeGameStarted;
 float _timeGameEnded;
@@ -79,6 +82,7 @@ void UpdateDrawFrame(void);
 void UnsetNumberAt(int i);
 void DrawNumbers(void);
 void SetNumber(int i, Vector2 position, float fallSpeed);
+void DrawBasket(void);
 
 // -------------------------------------------------------------------------------------
 // Program main entry point
@@ -101,8 +105,6 @@ int main(void)
         // Update
         // -----------------------------------------------------------------------------
         /* EXAMPLE
-        if (IsKeyDown(KEY_RIGHT)) ballPosition.x += 2.0f;
-        if (IsKeyDown(KEY_LEFT)) ballPosition.x -= 2.0f;
         if (IsKeyDown(KEY_UP)) ballPosition.y -= 2.0f;
         if (IsKeyDown(KEY_DOWN)) ballPosition.y += 2.0f;
 
@@ -164,12 +166,18 @@ void DrawNumbers(void)
     }
 }
 
+void DrawBasket(void)
+{
+    Rectangle rec = {0, 0, BASKET_SOURCE_WIDTH, BASKET_SOURCE_HEIGHT };
+    DrawTextureRec(_atlasBasket, rec, _basket.position, WHITE);
+}
 
 void GameInit(void)
 {
     _state = PLAYING;
     _timeGameStarted = GetTime();
-
+    _basket.position.x = screenWidth/2 - BASKET_SOURCE_WIDTH/2;
+    _basket.position.y = screenHeight - BASKET_SOURCE_HEIGHT -  10;
     // 
     for (int i = 0; i < NUMBER_MAX_COUNT; i++)
     {
@@ -207,9 +215,11 @@ void UpdateDrawFrame(void)
     {
         // TODO: Gametime HUD
     }
-
+    if (IsKeyDown(KEY_RIGHT)) _basket.position.x += 2.0f;
+    if (IsKeyDown(KEY_LEFT)) _basket.position.x -= 2.0f;
+    DrawBasket();
     DrawText("Calculate and catch correct number!", 10, 10, 20, DARKGRAY);
-    DrawNumbers();    
+    DrawBasket();    
     EndDrawing();
 }
 
