@@ -15,13 +15,13 @@
  *       - Add sum
  *       - Add correct answer to sum..
  *       - correct spacing of answers
- *       - 
  *       - moving basket with mouse
  *       - prevent out of screen
  *       - background
  *       - calculations...
- *       - correct numers
+ *       - correct numbers
  *       - collision
+ *       - SPLIT code in files..
  *      alfa3:
  *       - sound
  * Copyright (c) 2023 Raymond Marx (rmarx@rayit.com)
@@ -61,8 +61,8 @@ typedef struct Number
 {
     Vector2 position;
     bool visible;
-    float fallSpeed;
-    int number;
+    // float fallSpeed;
+    // int number;
     Rectangle rec;
 } Number;
 
@@ -80,13 +80,20 @@ const int screenHeight = 800;
 
 GameState _state;
 Texture2D _atlasBasket;
-Texture2D _atlasNumber1;
+
+// Test of sums (should be from??)
+const char *sums[] = {"25+25", "50+50", "100+100"};
+// Test of answers
+int answers[3][8] = {
+    {0, 100, 20, 50, 60, 25, 150, 55},
+    {100, 0, 50, 99, 80, 150, 200, 900},
+    {100, 250, 150, 50, 200, 80, 400, 1000}
+};
+// Correct answers
+int correctAnswers[3] = {3, 0, 4};
 
 Number _numbers[NUMBER_MAX_COUNT]; 
 Basket _basket;
-
-float _timeGameStarted;
-float _timeGameEnded;
 
 //---------------------------------------------------------------------------
 // Module Functions Declaration (local)
@@ -104,19 +111,16 @@ void ResetNumbers(void);
 // -------------------------------------------------------------------------------------
 int main(void)
 {
-    srand(time(0));
-
     // Initialization
     // ---------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "RayIT");
     
-    // TODO load textures..
+    // Load textures..
     _atlasBasket = LoadTexture("resources/red-basket.png");
     _basket.rec = (Rectangle){0, 0, BASKET_SOURCE_WIDTH, BASKET_SOURCE_HEIGHT };
 
-
     GameInit();
-    SetTargetFPS(80);
+    SetTargetFPS(60);
 
     while(!WindowShouldClose())
     {
@@ -125,6 +129,7 @@ int main(void)
     }
     //UnloadTexture(tex);
     //UnloadModel(model);
+    
     CloseWindow();
     return 0;
 }
@@ -136,7 +141,7 @@ void DrawNumbersInit(void)
         // Random X position
         _numbers[i].position.x = GetRandomValue( 10, screenWidth-10 );
         _numbers[i].visible = true;
-    }     
+    }
 }
 
 void DrawNumbers(void)
@@ -152,6 +157,7 @@ void DrawNumbers(void)
         
         if (_numbers[i].visible == true) 
         {
+            // This should be random number.. 
             DrawText("100", _numbers[i].position.x, _numbers[i].position.y,  NUMBERS_SIZE, RED);
         }
         
@@ -178,7 +184,6 @@ void ResetNumbers(void)
     }
 }
 
-
 void DrawBasket(void)
 {
     // Moving x axis
@@ -191,7 +196,7 @@ void DrawBasket(void)
 void GameInit(void)
 {
     _state = PLAYING;
-    _timeGameStarted = GetTime();
+    // _timeGameStarted = GetTime();
     
     // Initial position
     _basket.position.x = screenWidth/2 - BASKET_SOURCE_WIDTH/2;
@@ -203,7 +208,7 @@ void GameInit(void)
 void GameEnd(void)
 {
     _state = END;
-    _timeGameEnded = GetTime();
+    //_timeGameEnded = GetTime();
 }
 
 void UpdateDrawFrame(void)
@@ -213,7 +218,7 @@ void UpdateDrawFrame(void)
         GameInit();
     }
 
-    // TODO winning..
+    
     // if (win condition)
     // {
     //     GameEnd();
@@ -221,7 +226,7 @@ void UpdateDrawFrame(void)
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
-
+    DrawFPS(0,0);
     if (_state == END)
     {
         // TODO: GameOver HUD
