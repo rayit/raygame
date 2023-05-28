@@ -8,7 +8,13 @@ TODO:
     - think about building (cmake or Makefile)
     - create src directory?
 
-> To build I needed to remove ld and atomic before cmake ..
+
+## OpenBSD raylib
+> doas pkg_add glfw openal
+
+> To build I needed to remove ld and atomic before cmake .. (made PR)
+
+> Solution: I needed to create a symlink in lib called "libraylib.so" that linked to the actual library. Any explanations as to why this works would be appreciated.
 
 
 #### OpenBSD build example
