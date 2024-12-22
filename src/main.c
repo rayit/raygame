@@ -24,7 +24,7 @@
  *       - SPLIT code in files..
  *      alfa3:
  *       - sound
- * Copyright (c) 2023 Raymond Marx (rmarx@rayit.com)
+ * Copyright (c) 2024 Raymond Marx (rmarx@rayit.com)
  *
  ****************************************************************************/
 
@@ -116,7 +116,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "RayIT");
     
     // Load textures..
-    _atlasBasket = LoadTexture("resources/red-basket.png");
+    _atlasBasket = LoadTexture("assets/images/red-basket.png");
     _basket.rec = (Rectangle){0, 0, BASKET_SOURCE_WIDTH, BASKET_SOURCE_HEIGHT };
 
     GameInit();
