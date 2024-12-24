@@ -42,7 +42,7 @@
 #define BASKET_SOURCE_WIDTH 100
 #define BASKET_SPEED 6.0f
 #define NUMBER_MAX_COUNT 8
-#define NUMBERS_SPEED 6.0f
+#define NUMBERS_SPEED 5.0f
 #define NUMBERS_SIZE 20
 //---------------------------------------------------------------------------
 // Types and Structures Definition
