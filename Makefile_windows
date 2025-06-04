@@ -1,0 +1,25 @@
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Iinclude -std=c99
+
+# Source and object files
+SRC = $(wildcard src/*.c)
+OBJ = $(SRC:.c=.o)
+
+# Raylib and system libraries (Windows MinGW)
+LIBS = -lraylib -lopengl32 -lgdi32 -lwinmm
+
+# Output executable name
+TARGET = math_defense.exe
+
+# Build target
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+
+# Compile source files into object files
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Clean build files
+clean:
+	del /Q $(OBJ) $(TARGET)

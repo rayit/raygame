@@ -29,3 +29,4 @@ add_executable(raygame ${SOURCES})
 
 # Link libraries
 target_link_libraries(raygame raylib m)
+
