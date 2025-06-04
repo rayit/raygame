@@ -7,6 +7,13 @@ typedef struct {
 
 static Player player;
 
+typedef struct {
+  Vector2 pos;
+  Vector2 velocity;
+  bool active;
+} Bullet;
+
+void BulletInit(void);
 void PlayerInit(void);
 void PlayerUpdate(void);
 void PlayerDraw(void);

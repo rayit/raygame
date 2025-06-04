@@ -5,6 +5,7 @@
 
 void GameInit(void)
 {
+  BulletInit();
   PlayerInit();
   EnemyInit();
 }
