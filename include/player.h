@@ -3,6 +3,7 @@
 
 typedef struct {
   Vector2 playerPos;
+  Texture2D playerTex;
 } Player;
 
 static Player player;
