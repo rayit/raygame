@@ -3,11 +3,23 @@
 #include "player.h"
 #include "enemy.h"
 
+Game game;
+
 void GameInit(void)
 {
+  game.gamestate = GAME_STATE_MENU;
+  // Menu
+  GameMenuInit();
+
+  // Game
   BulletInit();
   PlayerInit();
   EnemyInit();
+}
+
+void GameMenuInit()
+{
+
 }
 
 void GameUpdate(void)

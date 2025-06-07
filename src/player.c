@@ -4,7 +4,7 @@
 #include "enemy.h"
 
 #define MAX_BULLETS 50
-#define FIRE_COOLDOWN .2f // 300 ms between shots
+#define FIRE_COOLDOWN .3f // 300 ms between shots
 
 // player texture
 Texture2D soldier; 
@@ -45,7 +45,7 @@ void PlayerUpdate(void) {
     {
       if (!bullets[i].active) {
         bullets[i].active = true;
-        bullets[i].pos = (Vector2) {player.playerPos.x, player.playerPos.y - player.playerTex.height/2};
+        bullets[i].pos = (Vector2) {player.playerPos.x, player.playerPos.y - player.playerTex.height};
         bullets[i].velocity = (Vector2) {0, -5};
         timeSinceLastShot = 0.0f;
         break;
@@ -84,10 +84,8 @@ void PlayerDraw(void) {
     }
   }
 
-  // For now draw circle (as player)
-  // DrawCircleV(player.playerPos, 20, DARKBLUE);
+  // draw player
   DrawTexture(player.playerTex, player.playerPos.x - player.playerTex.width/2, SCREEN_HEIGHT - player.playerTex.height, WHITE);
-  // DrawTexture(soldier, 400 - soldier.width/2, 300 - soldier.height/2, WHITE);
 }
 
 void PlayerUnload(void) {

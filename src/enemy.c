@@ -1,13 +1,13 @@
 #include "raylib.h"
 #include "enemy.h"
-#include "utils.h"
+// #include "utils.h"
 
 
 Enemy enemy;  // ✅ Define the actual variable here, once
 
 void EnemyInit(void) {
   enemy.pos = (Vector2){ GetRandomValue(100, 700), 0 };
-  enemy.correctAnswer = GenerateQuestion(enemy.question);
+  // enemy.correctAnswer = GenerateQuestion(enemy.question);
   enemy.active = true;
   Rectangle myRect = {enemy.pos.x, enemy.pos.y, 100, 40};
   enemy.rec = myRect;
