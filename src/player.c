@@ -6,6 +6,8 @@
 #define MAX_BULLETS 50
 #define FIRE_COOLDOWN .3f // 300 ms between shots
 
+Player player;
+
 // player texture
 Texture2D soldier; 
 Bullet bullets[MAX_BULLETS];

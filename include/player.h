@@ -6,7 +6,7 @@ typedef struct {
   Texture2D playerTex;
 } Player;
 
-static Player player;
+extern Player player;
 
 typedef struct {
   Vector2 pos;
